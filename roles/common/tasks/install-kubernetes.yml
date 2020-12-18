@@ -1,0 +1,20 @@
+---
+- name: Add kubernetes repo GPG key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Add kubernetes repo
+  apt_repository:
+    repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+    update_cache: yes
+
+- name: Install kubernetes packages
+  apt:
+    name: 
+      - kubelet={{ kube_version }}
+      - kubeadm={{ kube_version }}
+      - kubectl={{ kube_version }}
+    install_recommends: yes
+
+- name: Freeze kubernetes tools version
+  shell: apt-mark hold kubelet kubeadm kubectl

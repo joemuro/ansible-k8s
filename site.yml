@@ -1,0 +1,27 @@
+# Install common dependencies
+- hosts: kube_cluster
+  become: true
+  roles:
+    - common
+
+# Prepare the master
+- hosts: kube_masters
+  roles:
+    - kube-master
+
+# Join worker nodes to the master
+- hosts: kube_masters
+  tasks:
+    - name: Generate a token to allow worker nodes to join the cluster
+      shell: kubeadm token create --print-join-command
+      register: kubeadm_result
+
+    - name: Store join command
+      set_fact:
+        cluster_join_command: "{{ kubeadm_result.stdout_lines[0] }}"
+
+- hosts: kube_workers
+  tasks:
+  - name: Join worker nodes to the cluster
+    shell: "{{ hostvars['kube_master'].cluster_join_command }}"
+    become: yes

@@ -1,0 +1,6 @@
+---
+kube_user: test_user
+
+docker_version: 5:19.03.10~3-0~ubuntu-focal
+
+kube_version: 1.18.5-00

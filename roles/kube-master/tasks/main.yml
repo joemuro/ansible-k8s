@@ -1,0 +1,30 @@
+---
+- name: Setup the cluster, attempt to revert all changes if a failure occur
+  block:
+    - name: Setup the kubernetes control plane
+      shell: kubeadm init --pod-network-cidr={{ pod_subnet_ip4addr }} --skip-token-print
+      become: yes
+
+    - name: Create a kube config directory
+      file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        mode: "0755"
+
+    - name: Initilize kube configuration file
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ kube_user }}"
+        group: "{{ kube_user }}"
+        backup: yes
+        remote_src: yes
+      become: true
+
+    - name: Install Calico CNI network overlay
+      shell: kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+
+  rescue:
+    - name: Attempt to reset all initialization
+      shell: kubeadm reset --force
+      become: true

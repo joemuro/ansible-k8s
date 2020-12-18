@@ -1,0 +1,4 @@
+---
+pod_subnet_ip4addr: "10.244.0.0/16"
+
+kube_user: test_user

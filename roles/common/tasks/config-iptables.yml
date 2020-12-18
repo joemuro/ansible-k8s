@@ -1,0 +1,9 @@
+---
+# https://wiki.libvirt.org/page/Net.bridge.bridge-nf-call_and_sysctl.conf
+- name: Enable iptables processing for bridge traffic
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
